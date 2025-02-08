@@ -2,6 +2,9 @@ package com.esun.onlineLibrary.Service;
 
 import com.esun.onlineLibrary.Model.*;
 import com.esun.onlineLibrary.Repository.*;
+import com.esun.onlineLibrary.Repository.DAO.BorrowingRecordJDBC;
+import com.esun.onlineLibrary.Repository.DAO.InventoryJDBC;
+import com.esun.onlineLibrary.Repository.DAO.UserJDBC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,14 +27,15 @@ public class BorrowingService {
         if(!optionalUser.isPresent()){
             throw new IllegalArgumentException("你是誰???");
         }
-        Optional<Inventory> availableBooks = inventoryRepository.findByBookIsbn(isbn);
-        if (!availableBooks.isPresent()) {
+        Optional<Inventory> book = inventoryRepository.findByBookIsbn(isbn);
+        if (!book.isPresent()) {
             throw new IllegalArgumentException("沒有這本書!!！");
         }
-        Inventory bookToBorrow = availableBooks.get();
-        if (bookToBorrow.getStatus() == Status.BORROWED) {
-            throw new IllegalArgumentException("書被別人拿走了!!！");
-        }
+
+        Inventory bookToBorrow = book.get();
+        if (bookToBorrow.getStatus() != Status.AVAILABLE) {
+            throw new IllegalArgumentException("這本書不能借!!！");
+        }        
         bookToBorrow.setStatus(Status.BORROWED);
         inventoryRepository.save(bookToBorrow);
 
@@ -48,11 +52,11 @@ public class BorrowingService {
         if(!optionalInventory.isPresent()){
             throw new IllegalArgumentException("你是不是打錯ID？");
         }
-        Inventory inventory = optionalInventory.get();
-        if(inventory.getStatus() == Status.AVAILABLE){
+        if(optionalInventory.get().getStatus() == Status.AVAILABLE){
             throw new IllegalArgumentException("你是不是忘了你已經還書了？");
         }
 
+        Inventory inventory = optionalInventory.get();
         Optional<BorrowingRecord> optionalRecord = borrowingRecordRepository
                 .findByInventoryIdAndReturnTimeIsNull(inventory.getId());
         if(!optionalRecord.isPresent()){
@@ -75,12 +79,11 @@ public class BorrowingService {
     }
 
     public List<BorrowingRecord> findRecordByPhone(String phone) {
-        Optional<User> optionalUser = userRepository.findByPhoneNumber(phone);
-        if(!optionalUser.isPresent()){
+        Optional<User> user = userRepository.findByPhoneNumber(phone);
+        if(!user.isPresent()){
             throw new IllegalArgumentException("沒有這個人");
         }
-        User user = optionalUser.get();
-        return borrowingRecordRepository.findByUserId(user.getId());
+        return borrowingRecordRepository.findByUserId(user.get().getId());
     }
 }
 

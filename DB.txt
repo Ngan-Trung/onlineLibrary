@@ -37,3 +37,70 @@ CREATE TABLE borrowing_records (
 
 CREATE INDEX idx_user_id ON borrowing_records(user_id);
 CREATE INDEX idx_user_id ON borrowing_records(inventory_id);
+
+DELIMITER //
+
+CREATE PROCEDURE find_User_By_Phone_Number (IN phone VARCHAR(20))
+BEGIN
+    SELECT * FROM users WHERE phone_number = phone;
+END //
+
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE exists_User_By_Phone_Number (IN phone VARCHAR(20), OUT result BOOLEAN)
+BEGIN
+    SELECT CASE WHEN COUNT(*) > 0 THEN TRUE ELSE FALSE END
+    INTO result
+    FROM users
+    WHERE phone_number = phone;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE find_Book_By_Name (IN bookName VARCHAR(100))
+BEGIN
+    SELECT * FROM books WHERE `name` LIKE CONCAT('%', bookName, '%');
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE find_Book_By_Isbn (IN Isbn VARCHAR(13))
+BEGIN
+    SELECT * FROM books WHERE isbn = Isbn;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE find_Inventory_By_Isbn (IN inventoryIsbn VARCHAR(13))
+BEGIN
+    SELECT * FROM inventory WHERE `isbn` = inventoryIsbn;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE exists_Inventory_By_Isbn (IN inventoryIsbn VARCHAR(13), OUT result BOOLEAN)
+BEGIN
+    SELECT CASE WHEN COUNT(*) = 0 THEN false ELSE true END
+    INTO result FROM inventory
+    WHERE isbn = inventoryIsbn;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE find_Record_By_Inventory (IN inventoryId BIGINT)
+BEGIN
+    SELECT * FROM borrowing_records br
+    JOIN inventory i ON br.inventory_id = i.id
+    WHERE `inventory_id` = inventoryId AND return_time IS NULL;
+END //
+DELIMITER ;
+
+DELIMITER //
+CREATE PROCEDURE find_Record_By_User (IN userId BIGINT)
+BEGIN
+    SELECT * FROM borrowing_records br
+    JOIN users us ON br.user_id = us.id
+    WHERE `user_id` = userId;
+END //
+DELIMITER ;

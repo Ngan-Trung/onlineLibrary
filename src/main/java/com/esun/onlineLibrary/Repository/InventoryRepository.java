@@ -12,5 +12,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long> {
     Optional<Inventory> findByBookIsbn(String isbn);
 
     boolean existsByBookIsbn(String isbn);
+
+    void deleteByBookIsbn(String isbn);
 }
 

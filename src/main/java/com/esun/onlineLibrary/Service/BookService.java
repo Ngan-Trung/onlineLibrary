@@ -2,9 +2,9 @@ package com.esun.onlineLibrary.Service;
 
 import com.esun.onlineLibrary.Model.*;
 import com.esun.onlineLibrary.Repository.*;
+import com.esun.onlineLibrary.Repository.DAO.BookJDBC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,10 +33,14 @@ public class BookService {
     }
 
     public Book updateName(Book book) {
-        Optional<Book> updatedBook = bookRepository.findByIsbn(book.getIsbn());
-        if(!updatedBook.isPresent()){
+        Optional<Book> optionalBook = bookRepository.findByIsbn(book.getIsbn());
+        if(!optionalBook.isPresent()){
             throw new IllegalArgumentException("沒有這本書");
         }
-        return bookRepository.save(updatedBook.get());
+        Book updatedBook = optionalBook.get();
+        updatedBook.setName(book.getName());
+        updatedBook.setAuthor(book.getAuthor());
+        updatedBook.setIntroduction(book.getIntroduction());
+        return bookRepository.save(updatedBook);
     }
 }

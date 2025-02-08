@@ -39,7 +39,7 @@ public class BorrowingController {
     }
 
     @GetMapping("/find/{id}")
-    @Operation(summary = "搜尋借書紀錄")
+    @Operation(summary = "用userId搜尋借書紀錄")
     @ApiResponse(responseCode = "200", description = "查詢成功")
     @ApiResponse(responseCode = "400", description = "沒有這個user")
     public ResponseEntity<List<BorrowingRecord>> findByUserId(@Parameter(description = "輸入UserID")@PathVariable Long id) {
@@ -48,7 +48,7 @@ public class BorrowingController {
     }
 
     @GetMapping("/findByPhone/{phone}")
-    @Operation(summary = "搜尋借書紀錄")
+    @Operation(summary = "用手機搜尋借書紀錄")
     @ApiResponse(responseCode = "200", description = "查詢成功")
     @ApiResponse(responseCode = "400", description = "沒有這個user")
     public ResponseEntity<List<BorrowingRecord>> findByPhone(@Parameter(description = "輸入UserID")@PathVariable String phone) {

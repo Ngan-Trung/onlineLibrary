@@ -2,6 +2,7 @@ package com.esun.onlineLibrary.Service;
 
 import com.esun.onlineLibrary.Model.*;
 import com.esun.onlineLibrary.Repository.*;
+import com.esun.onlineLibrary.Repository.DAO.InventoryJDBC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,9 +19,9 @@ public class InventoryService {
     private BookRepository bookRepository;
 
     public Inventory findByIsbn(String isbn) {
-        Optional<Inventory> optionalInventory = inventoryRepository.findByBookIsbn(isbn);
-        if(optionalInventory.isPresent()){
-            return optionalInventory.get();
+        Optional<Inventory> inventory = inventoryRepository.findByBookIsbn(isbn);
+        if(inventory.isPresent()){
+            return inventory.get();
         }
         throw new IllegalArgumentException("沒有這本書");
     }
@@ -56,6 +57,7 @@ public class InventoryService {
         }
 
         Book book = optionalBook.get();
+        inventoryRepository.deleteByBookIsbn(isbn);
         bookRepository.delete(book);
     }
 }
