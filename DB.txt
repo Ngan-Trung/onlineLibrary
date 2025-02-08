@@ -1,0 +1,39 @@
+CREATE DATABASE Library;
+USE Library;
+CREATE TABLE users (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    phone_number VARCHAR(20) NOT NULL UNIQUE,
+    `password` VARCHAR(255) NOT NULL,
+    user_name VARCHAR(50) NOT NULL,
+    registration_time DATETIME NOT NULL DEFAULT NOW(),
+    last_login_time DATETIME DEFAULT NULL
+);
+
+CREATE TABLE books (
+    isbn VARCHAR(13) PRIMARY KEY,
+    `name` VARCHAR(100) NOT NULL,
+    author VARCHAR(50) NOT NULL,
+    introduction TEXT
+);
+
+CREATE TABLE inventory (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    isbn VARCHAR(13) NOT NULL,
+    store_time DATETIME NOT NULL DEFAULT NOW(),
+    `status` ENUM('AVAILABLE', 'BORROWED', 'REPAIRING', 'LOST', 'DAMAGED', 'DISCARDED')
+        NOT NULL DEFAULT 'AVAILABLE',
+	FOREIGN KEY (isbn) REFERENCES books(isbn) ON DELETE CASCADE
+);
+
+CREATE TABLE borrowing_records (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    inventory_id BIGINT NOT NULL,
+    borrowing_time DATETIME NOT NULL DEFAULT NOW(),
+    return_time DATETIME DEFAULT NULL,
+	FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+	FOREIGN KEY (inventory_id) REFERENCES inventory(id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_user_id ON borrowing_records(user_id);
+CREATE INDEX idx_user_id ON borrowing_records(inventory_id);
