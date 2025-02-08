@@ -33,7 +33,7 @@ public class InventoryService {
         Inventory inventory = new Inventory();
         inventory.setBook(book);
         inventory.setStoreTime(LocalDateTime.now());
-        inventory.setStatus("available");
+        inventory.setStatus(Status.AVAILABLE);
         return inventoryRepository.save(inventory);
     }
 }

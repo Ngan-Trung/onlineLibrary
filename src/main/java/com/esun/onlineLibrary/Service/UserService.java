@@ -30,11 +30,11 @@ public class UserService {
     }
 
     public User login(String phoneNumber, String password) {
-        Optional<User> optionalUserser = userRepository.findByPhoneNumber(phoneNumber);
-        if (optionalUserser.isEmpty() || !optionalUserser.get().getPassword().equals(password)) {
+        Optional<User> optionalUser = userRepository.findByPhoneNumber(phoneNumber);
+        if (optionalUser.isEmpty() || !optionalUser.get().getPassword().equals(password)) {
             throw new IllegalArgumentException("你帳號密碼打錯啦!!!");
         }
-        User user = optionalUserser.get();
+        User user = optionalUser.get();
         user.setLastLoginTime(LocalDateTime.now());
         userRepository.save(user);
         return user;

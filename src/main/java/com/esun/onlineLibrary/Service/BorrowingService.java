@@ -41,7 +41,7 @@ public class BorrowingService {
         if (bookToBorrow.getStatus().equals("borrowed")) {
             throw new IllegalStateException("書被別人拿走了!!！");
         }
-        bookToBorrow.setStatus("borrowed");
+        bookToBorrow.setStatus(Status.BORROWED);
         inventoryRepository.save(bookToBorrow);
 
         BorrowingRecord record = new BorrowingRecord();
@@ -68,7 +68,7 @@ public class BorrowingService {
         borrowingRecordRepository.save(record);
 
         Inventory inventory = record.getInventory();
-        inventory.setStatus("available");
+        inventory.setStatus(Status.AVAILABLE);
         inventoryRepository.save(inventory);
         return record;
     }

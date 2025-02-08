@@ -37,7 +37,7 @@ public class BookService {
             throw new IllegalArgumentException("沒有這本書啦！");
         }
 
-        if(inventory.get().getStatus().equals("borrowed")){
+        if(inventory.get().getStatus() == Status.BORROWED){
             throw new IllegalArgumentException("書被借走了，無法刪除");
         }
 
