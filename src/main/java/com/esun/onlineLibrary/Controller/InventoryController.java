@@ -27,12 +27,27 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryService.findByIsbn(isbn));
     }
 
+    @GetMapping("/search/all")
+    @Operation(summary = "查看全部書的庫存")
+    public ResponseEntity<List<Inventory>> getAllInventory() {
+        return ResponseEntity.ok(inventoryService.findAll());
+    }
+
     @PostMapping("/add")
     @Operation(summary = "新增庫藏書")
     @ApiResponse(responseCode = "200", description = "收藏成功")
     @ApiResponse(responseCode = "400", description = "已經收藏過了")
     public ResponseEntity<Inventory> addInventory(@Parameter(description = "書的完整資料") @RequestBody Book book) {
         return ResponseEntity.ok(inventoryService.addInventory(book));
+    }
+
+    @DeleteMapping("/{isbn}")
+    @Operation(summary = "用isbn刪除書")
+    @ApiResponse(responseCode = "200", description = "有刪到書")
+    @ApiResponse(responseCode = "400", description = "沒有這本書或是被借走了")
+    public ResponseEntity<String> deleteBook(@Parameter(description = "書isbn") @PathVariable String isbn) {
+        inventoryService.deleteBook(isbn);
+        return ResponseEntity.ok("ISBN：" + isbn + " 已被刪除!!!");
     }
 }
 

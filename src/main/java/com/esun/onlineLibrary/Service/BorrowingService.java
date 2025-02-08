@@ -12,20 +12,11 @@ import java.util.Optional;
 @Service
 public class BorrowingService {
     @Autowired
-    private final BorrowingRecordRepository borrowingRecordRepository;
+    private BorrowingRecordRepository borrowingRecordRepository;
     @Autowired
-    private final InventoryRepository inventoryRepository;
+    private InventoryRepository inventoryRepository;
     @Autowired
-    private final UserRepository userRepository;
-
-    public BorrowingService(BorrowingRecordRepository borrowingRecordRepository,
-                            InventoryRepository inventoryRepository,
-                            UserRepository userRepository) {
-        this.borrowingRecordRepository = borrowingRecordRepository;
-        this.inventoryRepository = inventoryRepository;
-        this.userRepository = userRepository;
-    }
-
+    private UserRepository userRepository;
 
     @Transactional
     public BorrowingRecord borrowBook(Long userId, String isbn) {
@@ -35,11 +26,11 @@ public class BorrowingService {
         }
         Optional<Inventory> availableBooks = inventoryRepository.findByBookIsbn(isbn);
         if (!availableBooks.isPresent()) {
-            throw new IllegalStateException("沒有這本書!!！");
+            throw new IllegalArgumentException("沒有這本書!!！");
         }
         Inventory bookToBorrow = availableBooks.get();
-        if (bookToBorrow.getStatus().equals("borrowed")) {
-            throw new IllegalStateException("書被別人拿走了!!！");
+        if (bookToBorrow.getStatus() == Status.BORROWED) {
+            throw new IllegalArgumentException("書被別人拿走了!!！");
         }
         bookToBorrow.setStatus(Status.BORROWED);
         inventoryRepository.save(bookToBorrow);
@@ -52,25 +43,44 @@ public class BorrowingService {
     }
 
     @Transactional
-    public BorrowingRecord returnBook(Long inventoryId) {
-        Optional<BorrowingRecord> optionalRecord = borrowingRecordRepository
-                .findByInventoryIdAndReturnTimeIsNull(inventoryId);
-
-        if(!optionalRecord.isPresent()){
+    public BorrowingRecord returnBook(String isbn) {
+        Optional<Inventory> optionalInventory = inventoryRepository.findByBookIsbn(isbn);
+        if(!optionalInventory.isPresent()){
             throw new IllegalArgumentException("你是不是打錯ID？");
         }
-        BorrowingRecord record = optionalRecord.get();
-        if(record.getInventory().getStatus().equals("available")){
+        Inventory inventory = optionalInventory.get();
+        if(inventory.getStatus() == Status.AVAILABLE){
             throw new IllegalArgumentException("你是不是忘了你已經還書了？");
         }
 
+        Optional<BorrowingRecord> optionalRecord = borrowingRecordRepository
+                .findByInventoryIdAndReturnTimeIsNull(inventory.getId());
+        if(!optionalRecord.isPresent()){
+            throw new IllegalArgumentException("沒有相關出借紀錄？");
+        }
+        BorrowingRecord record = optionalRecord.get();
         record.setReturnTime(LocalDateTime.now());
         borrowingRecordRepository.save(record);
 
-        Inventory inventory = record.getInventory();
         inventory.setStatus(Status.AVAILABLE);
         inventoryRepository.save(inventory);
         return record;
+    }
+
+    public List<BorrowingRecord> findRecordByUser(Long userId) {
+        if(!userRepository.existsById(userId)){
+            throw new IllegalArgumentException("沒有這個人");
+        }
+        return borrowingRecordRepository.findByUserId(userId);
+    }
+
+    public List<BorrowingRecord> findRecordByPhone(String phone) {
+        Optional<User> optionalUser = userRepository.findByPhoneNumber(phone);
+        if(!optionalUser.isPresent()){
+            throw new IllegalArgumentException("沒有這個人");
+        }
+        User user = optionalUser.get();
+        return borrowingRecordRepository.findByUserId(user.getId());
     }
 }
 

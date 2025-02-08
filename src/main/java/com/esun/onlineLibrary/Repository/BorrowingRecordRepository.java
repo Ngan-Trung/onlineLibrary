@@ -11,6 +11,6 @@ public interface BorrowingRecordRepository extends JpaRepository<BorrowingRecord
 
     List<BorrowingRecord> findByUserId(Long userId);
 
-    Optional<BorrowingRecord> findByInventoryIdAndReturnTimeIsNull(Long inventoryId);
+    Optional<BorrowingRecord> findByInventoryIdAndReturnTimeIsNull(Long id);
 }
 

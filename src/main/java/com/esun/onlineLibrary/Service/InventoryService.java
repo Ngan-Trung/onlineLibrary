@@ -14,27 +14,49 @@ import java.util.Optional;
 public class InventoryService {
     @Autowired
     private InventoryRepository inventoryRepository;
+    @Autowired
+    private BookRepository bookRepository;
 
     public Inventory findByIsbn(String isbn) {
         Optional<Inventory> optionalInventory = inventoryRepository.findByBookIsbn(isbn);
         if(optionalInventory.isPresent()){
             return optionalInventory.get();
         }
-        return null;
+        throw new IllegalArgumentException("沒有這本書");
+    }
+
+    public List<Inventory> findAll() {
+        return inventoryRepository.findAll();
     }
 
     @Transactional
     public Inventory addInventory(Book book) {
-
-        Optional<Inventory> optionalBook = inventoryRepository.findByBookIsbn(book.getIsbn());
-        if(optionalBook.isPresent()){
+        if(inventoryRepository.existsByBookIsbn(book.getIsbn())){
             throw new IllegalArgumentException("有這本書了");
         }
+        bookRepository.save(book);
         Inventory inventory = new Inventory();
         inventory.setBook(book);
         inventory.setStoreTime(LocalDateTime.now());
         inventory.setStatus(Status.AVAILABLE);
         return inventoryRepository.save(inventory);
+    }
+
+    @Transactional
+    public void deleteBook(String isbn) {
+        Optional<Book> optionalBook = bookRepository.findById(isbn);
+        Optional<Inventory> inventory = inventoryRepository.findByBookIsbn(isbn);
+
+        if (!optionalBook.isPresent()) {
+            throw new IllegalArgumentException("沒有這本書啦！");
+        }
+
+        if(inventory.get().getStatus() == Status.BORROWED){
+            throw new IllegalArgumentException("書被借走了，無法刪除");
+        }
+
+        Book book = optionalBook.get();
+        bookRepository.delete(book);
     }
 }
 

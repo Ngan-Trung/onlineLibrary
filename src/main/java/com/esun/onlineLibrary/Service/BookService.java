@@ -24,24 +24,19 @@ public class BookService {
         throw new IllegalArgumentException("找不到書啦！!!");
     }
 
+    public List<Book> findAll() {
+        return bookRepository.findAll();
+    }
+
     public List<Book> searchBooksByName(String name) {
         return bookRepository.findByNameContaining(name);
     }
 
-    @Transactional
-    public void deleteBook(String isbn) {
-        Optional<Book> optionalBook = bookRepository.findById(isbn);
-        Optional<Inventory> inventory = inventoryRepository.findByBookIsbn(isbn);
-
-        if (!optionalBook.isPresent()) {
-            throw new IllegalArgumentException("沒有這本書啦！");
+    public Book updateName(Book book) {
+        Optional<Book> updatedBook = bookRepository.findByIsbn(book.getIsbn());
+        if(!updatedBook.isPresent()){
+            throw new IllegalArgumentException("沒有這本書");
         }
-
-        if(inventory.get().getStatus() == Status.BORROWED){
-            throw new IllegalArgumentException("書被借走了，無法刪除");
-        }
-
-        Book book = optionalBook.get();
-        bookRepository.delete(book);
+        return bookRepository.save(updatedBook.get());
     }
 }
