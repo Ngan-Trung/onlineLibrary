@@ -38,22 +38,22 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PostMapping("/seeAll")
-    @Operation(summary = "查看user", description = "")
+    @GetMapping("/seeAll")
+    @Operation(summary = "查看user，只有管理員能用", description = "")
     @ApiResponse(responseCode = "200", description = "成功查詢")
     public ResponseEntity<List<User>> seeAll() {
         return ResponseEntity.ok(userService.seeAllUser());
     }
 
-    @PostMapping("/delete/{id}")
-    @Operation(summary = "用id刪除user", description = "")
+    @DeleteMapping("/delete/{id}")
+    @Operation(summary = "用id刪除user，只有管理員能用", description = "")
     public ResponseEntity<User> deleteById(@Parameter(description = "user的id") @PathVariable Long id) {
         userService.deleteUserById(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/deleteAll}")
-    @Operation(summary = "刪除全部user", description = "")
+    @DeleteMapping("/deleteAll")
+    @Operation(summary = "刪除全部user，只有管理員能用", description = "")
     public ResponseEntity<User> deleteAll() {
         userService.deleteAllUser();
         return ResponseEntity.noContent().build();

@@ -55,5 +55,26 @@ public class BorrowingController {
         List<BorrowingRecord> records = borrowingService.findRecordByPhone(phone);
         return ResponseEntity.ok(records);
     }
+
+    @GetMapping("/findAll")
+    @Operation(summary = "查看全部借書紀錄")
+    @ApiResponse(responseCode = "200", description = "查詢成功")
+    public ResponseEntity<List<BorrowingRecord>> findAll() {
+        return ResponseEntity.ok(borrowingService.findAll()) ;
+    }
+
+    @DeleteMapping("/delete/{id}")
+    @Operation(summary = "用id刪除借書紀錄")
+    public ResponseEntity<BorrowingRecord> deleteById(@Parameter(description = "輸入紀錄ID")@PathVariable Long id) {
+        borrowingService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/deleteAll")
+    @Operation(summary = "刪除全部借書紀錄")
+    public ResponseEntity<BorrowingRecord> deleteAll() {
+        borrowingService.deleteAll();
+        return ResponseEntity.noContent().build();
+    }
 }
 

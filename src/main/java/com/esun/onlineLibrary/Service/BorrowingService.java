@@ -85,5 +85,17 @@ public class BorrowingService {
         }
         return borrowingRecordRepository.findByUserId(user.get().getId());
     }
+
+    public List<BorrowingRecord> findAll() {
+        return borrowingRecordRepository.findAll();
+    }
+
+    public void deleteAll() {
+        borrowingRecordRepository.deleteAll();
+    }
+
+    public void deleteById(Long id) {
+        borrowingRecordRepository.deleteById(id);
+    }
 }
 
