@@ -1,20 +1,30 @@
 package com.esun.onlineLibrary.Model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.validation.annotation.Validated;
 
 @Entity
 @Table(name = "books")
+@Validated
 public class Book {
 
     @Id
     @Column(length = 20)
+    @NotBlank
+    @Size(min = 1, max = 20)
     private String isbn;
 
     @Column(nullable = false, length = 100)
+    @NotBlank
+    @Size(min = 1, max = 100)
     private String name;
 
     @Column(nullable = false, length = 50)
+    @NotBlank
+    @Size(min = 1, max = 50)
     private String author;
 
     @Column(columnDefinition = "TEXT")

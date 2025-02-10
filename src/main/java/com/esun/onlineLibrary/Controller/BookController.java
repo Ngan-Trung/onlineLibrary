@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +24,7 @@ public class BookController {
     @Operation(summary = "用isbn查書")
     @ApiResponse(responseCode = "200", description = "有查到書")
     @ApiResponse(responseCode = "400", description = "沒查到")
-    public ResponseEntity<Book> getBookByIsbn(@Parameter(description = "書isbn") @PathVariable String isbn) {
+    public ResponseEntity<Book> getBookByIsbn(@NotBlank @Parameter(description = "書isbn") @PathVariable String isbn) {
         return ResponseEntity.ok(bookService.findBookByIsbn(isbn));
     }
 
@@ -31,7 +33,7 @@ public class BookController {
     @Operation(summary = "用名字查書")
     @ApiResponse(responseCode = "200", description = "有查到書")
     @ApiResponse(responseCode = "400", description = "沒查到")
-    public ResponseEntity<List<Book>> searchBooks(@Parameter(description = "書名") @PathVariable String name) {
+    public ResponseEntity<List<Book>> searchBooks(@NotBlank @Parameter(description = "書名") @PathVariable String name) {
         return ResponseEntity.ok(bookService.searchBooksByName(name));
     }
 
@@ -45,7 +47,7 @@ public class BookController {
     @Operation(summary = "更新書資料")
     @ApiResponse(responseCode = "200", description = "更新成功")
     @ApiResponse(responseCode = "400", description = "沒這本書")
-    public ResponseEntity<Book> updateBooks(@Parameter(description = "書的資料") @RequestBody Book book) {
+    public ResponseEntity<Book> updateBooks(@Valid @Parameter(description = "書的資料") @RequestBody Book book) {
         return ResponseEntity.ok(bookService.updateName(book));
     }
 }
