@@ -4,6 +4,7 @@ import com.esun.onlineLibrary.Model.*;
 import com.esun.onlineLibrary.Repository.*;
 import com.esun.onlineLibrary.Repository.DAO.UserJDBC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,8 @@ import java.util.Optional;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     public User registerUser(String phoneNumber, String password, String userName) {
         if (userRepository.existsByPhoneNumber(phoneNumber)) {
@@ -21,7 +24,7 @@ public class UserService {
         }
         User user = new User();
         user.setPhoneNumber(phoneNumber);
-        user.setPassword(password);
+        user.setPassword(passwordEncoder.encode(password));
         user.setUserName(userName);
         user.setRegistrationTime(LocalDateTime.now());
         return userRepository.save(user);
@@ -33,7 +36,7 @@ public class UserService {
             throw new IllegalArgumentException("沒有這個帳號!!!");
         }
         User user = optionalUser.get();
-        if (!user.getPassword().equals(password)) {
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("你帳號密碼打錯啦!!!");
         }
         user.setLastLoginTime(LocalDateTime.now());

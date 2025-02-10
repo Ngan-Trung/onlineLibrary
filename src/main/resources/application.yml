@@ -11,6 +11,10 @@ spring:
       ddl-auto: update
     show-sql: true
 
+  security:
+    password:
+      encoder-strength: 10
+
 springdoc:
   swagger-ui:
     enabled: true
