@@ -1,17 +1,22 @@
 package com.esun.onlineLibrary.Model;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
 @Data
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +30,9 @@ public class User {
 
     @Column(name = "user_name", nullable = false, length = 50)
     private String userName;
+
+    @Column(name = "role")
+    private String role;
 
     @Column(name = "registration_time", nullable = false)
     private LocalDateTime registrationTime;
@@ -48,6 +56,11 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_"+this.role));
+    }
+
     public String getPassword() {
         return password;
     }
@@ -56,12 +69,25 @@ public class User {
         this.password = password;
     }
 
+    @Override
+    public String getUsername() {
+        return phoneNumber;
+    }
+
     public String getUserName() {
-        return userName;
+       return userName;
     }
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public LocalDateTime getRegistrationTime() {

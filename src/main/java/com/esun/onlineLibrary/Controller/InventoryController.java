@@ -23,7 +23,7 @@ public class InventoryController {
     @Autowired
     private InventoryService inventoryService;
 
-    @GetMapping("/search/{isbn}")
+    @GetMapping("/public/search/{isbn}")
     @Operation(summary = "用isbn查書的庫存")
     @ApiResponse(responseCode = "200", description = "有這本書")
     @ApiResponse(responseCode = "400", description = "沒有這本書")
@@ -31,13 +31,13 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryService.findByIsbn(isbn));
     }
 
-    @GetMapping("/search/all")
+    @GetMapping("/public/search/all")
     @Operation(summary = "查看全部書的庫存")
     public ResponseEntity<List<Inventory>> getAllInventory() {
         return ResponseEntity.ok(inventoryService.findAll());
     }
 
-    @PostMapping("/add")
+    @PostMapping("/admin/add")
     @Operation(summary = "新增庫藏書")
     @ApiResponse(responseCode = "200", description = "收藏成功")
     @ApiResponse(responseCode = "400", description = "已經收藏過了")
@@ -45,7 +45,7 @@ public class InventoryController {
         return ResponseEntity.ok(inventoryService.addInventory(book));
     }
 
-    @DeleteMapping("/{isbn}")
+    @DeleteMapping("/admin/{isbn}")
     @Operation(summary = "用isbn刪除書")
     @ApiResponse(responseCode = "200", description = "有刪到書")
     @ApiResponse(responseCode = "400", description = "沒有這本書或是被借走了")
